@@ -60,27 +60,27 @@ export const UploadZone = ({ onFileSelect }: UploadZoneProps) => {
           onDragOver={handleDrag}
           onDrop={handleDrop}
           className={`
-            relative border-2 border-dashed rounded-xl transition-all duration-300 bg-card/30 backdrop-blur-sm
+            relative border-2 border-dashed rounded-2xl transition-all duration-300 bg-white/5 backdrop-blur-lg text-white
             ${isDragging 
               ? "neon-border scale-[1.02]" 
-              : "border-border hover:border-primary/50 hover:scale-[1.01]"
+              : "border-white/40 hover:border-white hover:scale-[1.01]"
             }
           `}
         >
           <div className="p-12 text-center">
             <div className="mb-6 flex justify-center">
               <div className={`
-                transition-all duration-300 p-4 rounded-full bg-primary/10 border border-primary/30
+                transition-all duration-300 p-4 rounded-full bg-white/10 border border-white/50
                 ${isDragging ? "neon-glow scale-110" : ""}
               `}>
-                <CloudUpload className="w-16 h-16 text-primary" strokeWidth={1.5} />
+                <CloudUpload className="w-16 h-16 text-white" strokeWidth={1.5} />
               </div>
             </div>
             
-            <p className="text-xl text-foreground mb-2 font-medium">
+            <p className="text-xl text-white mb-2 font-semibold tracking-wide">
               Drag & Drop Image Here
             </p>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-white/70">
               or Click to Upload
             </p>
           </div>

@@ -14,6 +14,13 @@ const Index = () => {
   const [optimizedImage, setOptimizedImage] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
+  const floatingShapes = [
+    { top: "6%", left: "8%", size: 80, rotate: "-8deg", opacity: 0.2 },
+    { top: "14%", right: "12%", size: 70, rotate: "12deg", opacity: 0.25 },
+    { bottom: "15%", left: "6%", size: 110, rotate: "-18deg", opacity: 0.15 },
+    { bottom: "8%", right: "8%", size: 120, rotate: "22deg", opacity: 0.2 },
+  ];
+
   const uploadToBackend = async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -78,33 +85,64 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background tech-stars gradient-mesh relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-[#089145] text-white">
+      {floatingShapes.map((shape, index) => (
+        <div
+          key={index}
+          className="absolute border-4 rounded-xl opacity-40"
+          style={{
+            top: shape.top,
+            right: shape.right,
+            bottom: shape.bottom,
+            left: shape.left,
+            width: `${shape.size}px`,
+            height: `${shape.size}px`,
+            transform: `rotate(${shape.rotate})`,
+            borderColor: `rgba(255,255,255,${shape.opacity})`,
+          }}
+        />
+      ))}
       <Navigation />
       
       <div className="relative z-10">
         {/* Main Content */}
         <main className="container mx-auto px-6 py-16">
           {state === "upload" && (
-            <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-              {/* Content */}
-              <div className="space-y-8 animate-fade-in max-w-2xl w-full">
+            <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-220px)]">
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <p className="uppercase tracking-[0.35em] text-white/80 text-sm">Revolutionizing spatial optimization</p>
+                  <h1 className="text-5xl lg:text-6xl font-bold leading-tight drop-shadow-md flex flex-wrap items-center gap-2">
+                    <span>DEE</span>
+                    <span className="inline-flex items-center gap-3">
+                      P
+                      <span className="grid grid-cols-2 gap-1 auto-rows-[1rem]">
+                        {Array.from({ length: 6 }).map((_, index) => {
+                          const filledIndices = new Set([0, 2, 4, 5]); // L-shape
+                          return filledIndices.has(index) ? (
+                            <span key={index} className="w-4 h-4 border border-white rounded-sm inline-block" />
+                          ) : (
+                            <span key={index} className="w-4 h-4 inline-block" />
+                          );
+                        })}
+                      </span>
+                    </span>
+                    <span>lace</span>
+                  </h1>
+                  <p className="text-xl text-white/90">Revolutionizing Spatial Optimization (with Flux)</p>
+                </div>
+                <p className="text-lg text-white/80 max-w-xl">
+                  Upload your PCB layout and let DeePlace minimize area while keeping every chip in perfect harmony. Flux-powered intelligence, simple workflow.
+                </p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8 shadow-2xl">
                 {error && (
-                  <div className="text-destructive bg-destructive/10 border border-destructive/30 rounded-lg p-4 text-left">
+                  <div className="text-red-200 bg-red-500/10 border border-red-200/40 rounded-lg p-4 text-left mb-6">
                     <p className="font-semibold mb-1">Upload failed</p>
-                    <p className="text-sm text-destructive">{error}</p>
+                    <p className="text-sm">{error}</p>
                   </div>
                 )}
-                <div className="space-y-6 text-center">
-                  <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                    <span className="text-primary">AI Chip Placement</span>
-                    <br />
-                    <span className="text-foreground">Optimization for PCBs</span>
-                  </h1>
-                  <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    Minimize PCB area and maximize efficiency. Upload your current chaotic layout, and we generate the optimal, minimized chip arrangement.
-                  </p>
-                </div>
-                
                 <UploadZone onFileSelect={handleFileSelect} />
               </div>
             </div>
