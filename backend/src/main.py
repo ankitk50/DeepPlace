@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 # Local imports from existing pipeline
-from src.multi_generate_select import generate_and_validate_async, select_best
+from src.multi_generate_select import generate_and_validate_parallel, select_best
 from src.send_to_model import _load_prompt_from_yaml
 from src.preprocess import subjects_from_image
 from src.validation import analyze_rectangles_and_empty_space
@@ -24,7 +24,7 @@ app.mount("/generated", StaticFiles(directory=OUTPUT_DIR), name="generated")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8081", "http://127.0.0.1:8081"],
+    allow_origins=["http://localhost:8080", "http://127.0.0.1:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -90,7 +90,7 @@ async def generate_endpoint(
 
     # Run generation + validation
     try:
-        candidates = await generate_and_validate_async(
+        candidates = await generate_and_validate_parallel(
             prompt=prompt,
             aspect_ratio=aspect,
             input_image_path=tmp_path,

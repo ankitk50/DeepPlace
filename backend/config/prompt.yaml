@@ -8,8 +8,9 @@ model: flux-2-pro
 # model: flux-kontext-pro
 image: "sample_image5_nolable.png"
 prompt: 
-  { "scene": "A collection of colored boxes of various sizes and colors arranged on a white background. Pack the boxes close to each other minimising the white space while maintaining the size, shape, and colors of the original image.",
+  { "scene": "Image 1 is collection of colored boxes of various sizes and colors arranged on a white background. Pack the boxes close to each other minimising the white space while maintaining the size, shape, and colors of the original image. Image 3 is example of the desired output for Image 2.",
     "subjects": [
     ],
   }
+   
    

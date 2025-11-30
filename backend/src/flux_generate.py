@@ -74,6 +74,16 @@ def submit_generation(
             image_data = base64.b64encode(image_file.read()).decode("utf-8")
             payload["input_image"] = image_data
 
+    # add reference image
+    with open("data/inputRef.png", "rb") as ref_image_file:
+        ref_image_data = base64.b64encode(ref_image_file.read()).decode("utf-8")
+        payload["input_image1"] = ref_image_data
+    
+    with open("data/outputRef.png", "rb") as ref_output_image_file:
+        ref_image_data_out = base64.b64encode(ref_output_image_file.read()).decode("utf-8")
+        payload["input_image2"] = ref_image_data_out
+    
+
     response = requests.post(
         API_URL,
         headers={

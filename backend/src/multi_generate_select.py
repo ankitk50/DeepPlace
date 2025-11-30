@@ -144,29 +144,6 @@ async def generate_and_validate_parallel(
     return list(candidates)
 
 
-async def generate_and_validate_async(
-    prompt: str,
-    aspect_ratio: str,
-    input_image_path: Optional[Path],
-    api_key: Optional[str],
-    sleep_seconds: float,
-    timeout_seconds: float,
-    output_dir: Path,
-    count: int,
-) -> List[Dict[str, Any]]:
-    """Async interface for FastAPI usage to avoid nested event loops."""
-    return await generate_and_validate_parallel(
-        prompt=prompt,
-        aspect_ratio=aspect_ratio,
-        input_image_path=input_image_path,
-        api_key=api_key,
-        sleep_seconds=sleep_seconds,
-        timeout_seconds=timeout_seconds,
-        output_dir=output_dir,
-        count=count,
-    )
-
-
 def generate_and_validate(
     prompt: str,
     aspect_ratio: str,
@@ -177,7 +154,7 @@ def generate_and_validate(
     output_dir: Path,
     count: int,
 ) -> List[Dict[str, Any]]:
-    """Sync helper for CLI scripts."""
+    """Generate multiple candidate images in parallel, validate each, and return metrics list."""
     return asyncio.run(
         generate_and_validate_parallel(
             prompt=prompt,
@@ -222,23 +199,23 @@ def select_best(
     original_rect_areas: Optional[List[float]],
 ) -> Optional[Dict[str, Any]]:
     """Select the best candidate prioritizing:
-    1) Matching rectangle count to original
-    2) Better size match to original block areas
-    3) Lower empty percentage
+    1) Lower empty percentage (least white space)
+    2) Matching rectangle count to original
+    3) Better size match to original block areas
     """
     valid = [c for c in candidates if c.get("empty_percentage") is not None]
     if not valid:
         return None
 
-    def sort_key(c: Dict[str, Any]) -> Tuple[int, float, float]:
+    def sort_key(c: Dict[str, Any]) -> Tuple[float, int, float]:
+        empty = float(c.get("empty_percentage", float("inf")))
         count_mismatch = 0
         if original_rect_count is not None:
             count_mismatch = 0 if c.get("rectangle_count") == original_rect_count else 1
         size_score = float("inf")
         if original_rect_areas:
             size_score = _size_match_score(original_rect_areas, c.get("rect_areas", []))
-        empty = float(c.get("empty_percentage", float("inf")))
-        return (count_mismatch, size_score, empty)
+        return (empty, count_mismatch, size_score)
 
     best = min(valid, key=sort_key)
     return best
@@ -312,7 +289,7 @@ def main():
         "candidates": candidates,
         "selected": best,
         "selection_reason": (
-            "Prioritized rectangle count match, then closest block sizes, then lowest empty percentage"
+            "Prioritized lowest empty percentage (least white space), then rectangle count match, then closest block sizes"
         ),
     }
     summary_path.write_text(json.dumps(payload, indent=2))
